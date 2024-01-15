@@ -1,28 +1,51 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Container } from 'semantic-ui-react';
-import { Activity } from '../models/activity';
-import NavBar from './NavBar';
-import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Container } from "semantic-ui-react";
+import { Activity } from "../models/activity";
+import NavBar from "./NavBar";
+import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 
 const App = () => {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  
-  useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/api/activities')
-      .then(response => {
-        setActivities(response.data)
-      })  
-  }, []);
+	const [activities, setActivities] = useState<Activity[]>([]);
+	const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
+	const [editMode, setEditMode] = useState(false);
 
-  return (
-    <>
-      <NavBar />
-      <Container style={{marginTop: '7em'}}>
-        <ActivityDashboard activities={activities} />
-      </Container>
-    </>
-  )
-}
- 
+	useEffect(() => {
+		axios.get<Activity[]>("http://localhost:5000/api/activities").then((response) => {
+			setActivities(response.data);
+		});
+	}, []);
+
+	const handleSelectActivity = (id: string) => setSelectedActivity(activities.find((x) => x.id === id));
+
+	const handleCancelSelectActivity = () => setSelectedActivity(undefined);
+
+	// Gets an options ID
+	// If it has an ID then it calls the handleSelectActivity function (This means there is a selected activity)
+	// If it has no ID then it alls the handleCancelSelectActivity (This means there is no selected activity)
+	const handleFormOpen = (id?: string) => {
+		id ? handleSelectActivity(id) : handleCancelSelectActivity();
+		setEditMode(true);
+	};
+
+	const handleFormClose = () => setEditMode(false);
+
+	return (
+		<>
+			<NavBar openForm={handleFormOpen} />
+			<Container style={{ marginTop: "7em" }}>
+				<ActivityDashboard
+					activities={activities}
+					selectedActivity={selectedActivity}
+					selectActivity={handleSelectActivity}
+					cancelSelectActivity={handleCancelSelectActivity}
+					editMode={editMode}
+					openForm={handleFormOpen}
+					closeForm={handleFormClose}
+				/>
+			</Container>
+		</>
+	);
+};
+
 export default App;
