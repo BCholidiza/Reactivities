@@ -39,7 +39,7 @@ const ActivityForm = ({ closeForm, activity: selectedActivity, createOrEdit }: P
 					onChange={handleInputChange}
 				/>
 				<Form.Input placeholder="Category" value={activity.category} name="category" onChange={handleInputChange} />
-				<Form.Input placeholder="Date" value={activity.date} name="date" onChange={handleInputChange} />
+				<Form.Input placeholder="Date" value={activity.date} name="date" onChange={handleInputChange} type="date" />
 				<Form.Input placeholder="City" value={activity.city} name="city" onChange={handleInputChange} />
 				<Form.Input placeholder="Venue" value={activity.venue} name={activity.venue} onChange={handleInputChange} />
 				<Button floated="right" positive type="submit" content="Submit" />
