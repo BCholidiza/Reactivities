@@ -9,6 +9,11 @@ const sleep = (delay: number) => {
 
 axios.defaults.baseURL = 'http://localhost:5000/api'
 
+axios.interceptors.response.use((response) => sleep(1000).then(() => response ).catch((error) => { 
+    console.log(error);
+    return Promise.reject(error)
+}))
+
 // Get an AxiosResponse as a parameter
 // Returns a JSON object named response.data
 const responseBody = <T> (response: AxiosResponse<T>) => response.data
