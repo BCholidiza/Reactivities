@@ -1,4 +1,5 @@
 //import React from 'react';
+import { SyntheticEvent, useState } from "react";
 import { Activity } from "../../../app/models/activity";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
 
@@ -6,9 +7,19 @@ interface Props {
 	activities: Activity[];
 	selectActivity: (id: string) => void;
 	deleteActivity: (id: string) => void;
+	submitting: boolean;
 }
 
-const ActivityList = ({ activities, selectActivity, deleteActivity }: Props) => {
+const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }: Props) => {
+	const [target, setTarget] = useState("");
+
+	// use this function to ensure that the correct button is targetted for deletion
+	// if this function is not there, all buttons show loader on deletion
+	const handleActivityDelete = (e: SyntheticEvent<HTMLButtonElement>, id: string) => {
+		setTarget(e.currentTarget.name);
+		deleteActivity(id);
+	};
+
 	return (
 		<Segment>
 			<Item.Group divided>
@@ -31,10 +42,12 @@ const ActivityList = ({ activities, selectActivity, deleteActivity }: Props) => 
 									color="blue"
 								/>
 								<Button
-									onClick={() => deleteActivity(activity.id)}
+									name={activity.id}
+									onClick={(e) => handleActivityDelete(e, activity.id)}
 									floated="right"
 									content="Delete"
 									color="red"
+									loading={submitting && target === activity.id}
 								/>
 								<Label basic content={activity.category} />
 							</Item.Extra>
