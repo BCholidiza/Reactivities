@@ -6,20 +6,25 @@ import ActivityDashboard from "../../features/activities/dashboard/ActivityDashb
 import { v4 as uuid } from "uuid";
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
-import useStore from "../stores/store";
-import { observer } from "mobx-react-lite";
 
 const App = () => {
-	const { activityStore } = useStore();
-
 	const [activities, setActivities] = useState<Activity[]>([]);
 	const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
 	const [editMode, setEditMode] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [submitting, setSubmitting] = useState(false);
 
 	useEffect(() => {
-		activityStore.loadActivities();
-	}, [activityStore]);
+		agent.Activities.list().then((response) => {
+			let activities: Activity[] = [];
+			response.forEach((activity) => {
+				activity.date = activity.date.split("T")[0];
+				activities.push(activity);
+			});
+			setActivities(activities);
+			setLoading(false);
+		});
+	}, []);
 
 	const handleSelectActivity = (id: string) => setSelectedActivity(activities.find((x) => x.id === id));
 
@@ -64,14 +69,14 @@ const App = () => {
 		});
 	};
 
-	if (activityStore.loadingInitial) return <LoadingComponent content="Loading app" />;
+	if (loading) return <LoadingComponent content="Loading app" />;
 
 	return (
 		<>
 			<NavBar openForm={handleFormOpen} />
 			<Container style={{ marginTop: "7em" }}>
 				<ActivityDashboard
-					activities={activityStore.activities}
+					activities={activities}
 					selectedActivity={selectedActivity}
 					selectActivity={handleSelectActivity}
 					cancelSelectActivity={handleCancelSelectActivity}
@@ -87,4 +92,4 @@ const App = () => {
 	);
 };
 
-export default observer(App);
+export default App;
