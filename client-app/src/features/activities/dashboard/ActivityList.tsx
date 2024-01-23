@@ -2,15 +2,16 @@
 import { SyntheticEvent, useState } from "react";
 import { Activity } from "../../../app/models/activity";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
+import useStore from "../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
 interface Props {
 	activities: Activity[];
-	selectActivity: (id: string) => void;
 	deleteActivity: (id: string) => void;
 	submitting: boolean;
 }
 
-const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }: Props) => {
+const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
 	const [target, setTarget] = useState("");
 
 	// use this function to ensure that the correct button is targetted for deletion
@@ -19,6 +20,8 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
 		setTarget(e.currentTarget.name);
 		deleteActivity(id);
 	};
+
+	const { activityStore } = useStore();
 
 	return (
 		<Segment>
@@ -36,7 +39,7 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
 							</Item.Description>
 							<Item.Extra>
 								<Button
-									onClick={() => selectActivity(activity.id)}
+									onClick={() => activityStore.selectActivity(activity.id)}
 									floated="right"
 									content="View"
 									color="blue"
@@ -59,4 +62,4 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
 	);
 };
 
-export default ActivityList;
+export default observer(ActivityList);
