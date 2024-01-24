@@ -18,14 +18,13 @@ export default class ActivityStore {
 		this.loadingInitial = true;
 
 		try {
-			const activities = await agent.Activities.list();
+			const Activitos = await agent.Activities.list();
 			this.setLoadingInitial(true);
-
-			activities.forEach((activity) => {
+			Activitos.forEach((activity) => {
 				activity.date = activity.date.split("T")[0];
-				this.activities.push(activity);
+				this.setActivities(activity);
+				this.setLoadingInitial(false);
 			});
-			this.setLoadingInitial(false);
 		} catch (error) {
 			console.log(error);
 			this.setLoadingInitial(false);
@@ -71,6 +70,8 @@ export default class ActivityStore {
 
 	setActivities = (activity: Activity) => (this.activities = [...this.activities, activity]);
 
+	setDeletedActivities = (id: string) => (this.activities = [...this.activities.filter((a) => a.id !== id)]);
+
 	setEditMode = (editmode: boolean) => (this.editMode = editmode);
 
 	updateActivity = async (activity: Activity) => {
@@ -89,6 +90,21 @@ export default class ActivityStore {
 	};
 
 	setLoading = (state: boolean) => (this.loading = state);
+
+	deleteActivity = async (id: string) => {
+		this.setLoading(true);
+
+		try {
+			await agent.Activities.delete(id);
+
+			this.setDeletedActivities(id);
+			if (this.selectedActivity?.id === id) this.cancelSelectedActivity();
+			this.setLoading(false);
+		} catch (error) {
+			console.log(error);
+			this.setLoading(false);
+		}
+	};
 }
 
 // Google runInAction
