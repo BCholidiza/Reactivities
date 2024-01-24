@@ -1,13 +1,12 @@
 import { Button, Card, Image } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
+import useStore from "../../../app/stores/store";
 
-interface Props {
-	activity: Activity;
-	cancelSelectActivity: () => void;
-	openForm: (id: string) => void;
-}
+const ActivityDetails = () => {
+	const { activityStore } = useStore();
+	const { selectedActivity: activity, openForm, cancelSelectedActivity } = activityStore;
 
-const ActivityDetails = ({ activity, cancelSelectActivity, openForm }: Props) => {
+	if (!activity) return;
+
 	return (
 		<Card fluid>
 			<Image src={`/assets/categoryImages/${activity.category}.jpg`} />
@@ -23,7 +22,7 @@ const ActivityDetails = ({ activity, cancelSelectActivity, openForm }: Props) =>
 					<Button onClick={() => openForm(activity.id)} basic color="blue" content="Edit" />
 
 					{/** No need to wrap in arrow function because it does not pass a parameter */}
-					<Button onClick={cancelSelectActivity} basic color="grey" content="Cancel" />
+					<Button onClick={cancelSelectedActivity} basic color="grey" content="Cancel" />
 				</Button.Group>
 			</Card.Content>
 		</Card>
