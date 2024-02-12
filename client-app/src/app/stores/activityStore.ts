@@ -27,6 +27,7 @@ export default class ActivityStore {
 			}, {} as { [key: string]: Activity[] })
 		);
 	}
+	
 	loadActivities = async () => {
 		this.setLoadingInitial(true);
 		try {
